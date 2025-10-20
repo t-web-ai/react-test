@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { logout } from "../service/auth";
 
 async function Logout() {
-  const [loading, setLoading] = useState(true);
   useEffect(() => {
     logout();
   });
