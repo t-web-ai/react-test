@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "bootstrap": "^5.3.8",
     "firebase": "^12.4.0",
+    "joi": "^18.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.65.0",
     "react-hot-toast": "^2.6.0",
     "react-router": "^7.9.4"
   },

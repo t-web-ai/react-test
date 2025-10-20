@@ -1,0 +1,16 @@
+body {
+  background-color: #f5f7fa;
+}
+.brand-color {
+  color: #0d6efd; /* Change to your brand color */
+}
+.auth-card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+.auth-image {
+  background: url("https://mobile-market-six.vercel.app/assets/img/mobimart/mobimart.png")
+    center/contain no-repeat;
+  min-height: 350px;
+}

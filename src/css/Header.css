@@ -1,0 +1,16 @@
+.navbar-toggler[aria-expanded="true"] > .navbar-toggler-icon,
+.navbar-toggler[aria-expanded="false"] > .btn-close {
+  display: none;
+}
+:root {
+  --bg-primary: rgba(224, 224, 224, 0.9);
+}
+
+[data-bs-theme="dark"] {
+  --bg-primary: rgba(29, 29, 29, 0.9);
+}
+
+.header {
+  background-color: var(--bg-primary);
+  backdrop-filter: blur(4px);
+}
