@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/router/ProtectedRoute";
-import Header from "./layouts/header";
+import Header from "./layouts/Header";
 import Logout from "./pages/Logout";
 import History from "./pages/History";
 function App() {

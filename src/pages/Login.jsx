@@ -49,7 +49,7 @@ function Login() {
                   name="password"
                   register={register}
                   placeholder="*********"
-                  error={errors["email"]}
+                  error={errors["password"]}
                 />
                 <button
                   type="submit"
