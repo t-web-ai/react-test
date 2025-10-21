@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebase";
-import { success, failed } from "../components/Toast";
+import { success, failed } from "../components/toast";
 
 const id = "AUTH";
 
