@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/router/ProtectedRoute";
 import Header from "./layouts/Header";
 import Logout from "./pages/Logout";
 import History from "./pages/History";
+import NotFound from "./pages/NotFound";
 function App() {
   return (
     <Routes>
@@ -18,6 +19,7 @@ function App() {
           </Route>
         </Route>
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
