@@ -6,6 +6,7 @@ import Header from "./layouts/Header";
 import Logout from "./pages/Logout";
 import History from "./pages/History";
 import NotFound from "./pages/NotFound";
+import CreateUser from "./pages/manage/CreateUser";
 function App() {
   return (
     <Routes>
@@ -16,6 +17,8 @@ function App() {
             <Route path="" element={<Dashboard />} />
             <Route path="history" element={<History />} />
             <Route path="logout" element={<Logout />} />
+
+            <Route path="users/create" element={<CreateUser />} />
           </Route>
         </Route>
       </Route>
