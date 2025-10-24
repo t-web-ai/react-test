@@ -59,7 +59,7 @@ function CreateItem() {
 
   const createItem = async (data) => {
     console.log(data);
-    reset({ username: data.username, quantity: null, price: null });
+    reset({ username: data.username, type: null, quantity: null, price: null });
   };
 
   if (!loading && !users.length)
@@ -111,6 +111,13 @@ function CreateItem() {
               </div>
             )}
           </div>
+          <InputBox
+            label="Item type"
+            type="text"
+            name="type"
+            error={errors["type"]}
+            register={register}
+          />
           <InputBox
             label="Item quantity"
             type="number"
