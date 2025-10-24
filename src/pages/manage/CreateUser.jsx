@@ -10,6 +10,7 @@ function CreateUser() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: joiResolver(createUserSchema),
@@ -17,6 +18,7 @@ function CreateUser() {
 
   const createUser = async ({ name, address }) => {
     const { status, message } = await create_user(name, address);
+    reset({ name: "", address: "" });
     if (status) {
       return success(message, "create-user");
     }
