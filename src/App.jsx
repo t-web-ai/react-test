@@ -7,6 +7,7 @@ import Logout from "./pages/Logout";
 import History from "./pages/History";
 import NotFound from "./pages/NotFound";
 import CreateUser from "./pages/manage/CreateUser";
+import CreateItem from "./pages/manage/CreateItem";
 function App() {
   return (
     <Routes>
@@ -19,6 +20,7 @@ function App() {
             <Route path="logout" element={<Logout />} />
 
             <Route path="users/create" element={<CreateUser />} />
+            <Route path="items/create" element={<CreateItem />} />
           </Route>
         </Route>
       </Route>

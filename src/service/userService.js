@@ -1,4 +1,11 @@
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
 import { firestore as db } from "./firebase";
 
 const { VITE_COLLECTION: collection_name } = import.meta.env;
@@ -40,6 +47,27 @@ export async function create_user(name, address) {
     return Promise.resolve({
       status: false,
       message: "Something went wrong. Please try again later.",
+    });
+  }
+}
+
+export async function get_users_list() {
+  const userRef = collection(db, collection_name);
+
+  try {
+    const documents = await getDocs(userRef);
+
+    const users = documents.docs.map((user) => {
+      return {
+        id: user.id,
+        data: user.data(),
+      };
+    });
+    return Promise.resolve(users);
+  } catch (error) {
+    return Promise.resolve({
+      status: false,
+      message: "Internal server error!",
     });
   }
 }
