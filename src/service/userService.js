@@ -13,6 +13,7 @@ import {
   getDocFromServer,
 } from "firebase/firestore";
 import { firestore as db } from "./firebase";
+import { v4 as uuidv4 } from "uuid";
 
 const { VITE_COLLECTION: collection_name } = import.meta.env;
 
@@ -40,9 +41,6 @@ export async function create_user(name, address) {
     const docRef = await addDoc(usersRef, {
       name,
       address,
-      yearlyStatus: {},
-      monthlyStatus: {},
-      dailyStatus: {},
       createdAt: new Date(),
     });
     return Promise.resolve({
@@ -81,51 +79,57 @@ export async function get_users_list() {
 export async function add_item({ id, type, quantity, price }) {
   const total = parseInt(quantity) * parseInt(price);
   const docRef = doc(db, collection_name, id);
-  try {
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      throw new Error("User is not found");
-    }
 
+  try {
+    // Check if user exists
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) throw new Error("User is not found!");
+
+    // Ensure server timestamp
     await setDoc(docRef, { createdAt: serverTimestamp() }, { merge: true });
     const docSnapp = await getDocFromServer(docRef);
-
     const data = docSnapp.data() || {};
 
-    if (!data.createdAt) {
-      throw new Error("Server is busy. Please try again!");
-    }
-    const server = data.createdAt.toDate();
-    const development = new Date();
-    const time = import.meta.env.VITE_DEVELOPMENT ? development : server;
+    if (!data.createdAt) throw new Error("Server is busy. Please try again!");
 
-    const now = new Date(time);
+    // Use server time or local dev time
+    const serverTime = data.createdAt.toDate();
+    const now = import.meta.env.VITE_DEVELOPMENT
+      ? new Date()
+      : new Date(serverTime);
+
     const year = now.getFullYear();
-    const month = `${year}-${(now.getMonth() + 1).toString().padStart(2, "0")}`;
-    const day = `${month}-${now.getDate().toString().padStart(2, "0")}`;
+    const month = `${year}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const day = `${month}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const nextEventId = crypto.randomUUID();
+    const nextEventId = uuidv4();
 
+    // Build update object
     const updates = {
-      [`yearlyStatus.${year}.quantity`]: increment(quantity),
-      [`yearlyStatus.${year}.total`]: increment(total),
-
-      [`monthlyStatus.${month}.quantity`]: increment(quantity),
-      [`monthlyStatus.${month}.total`]: increment(total),
-
+      // daily details
       [`dailyStatus.${day}.${nextEventId}`]: { type, quantity, price, total },
+
+      // total price
+      [`dailyTotals.${day}`]: increment(total),
+      [`monthlyTotals.${month}`]: increment(total),
+      [`yearlyTotals.${year}`]: increment(total),
+
+      // total quantity
+      [`dailyQuantityTotals.${day}`]: increment(quantity),
+      [`monthlyQuantityTotals.${month}`]: increment(quantity),
+      [`yearlyQuantityTotals.${year}`]: increment(quantity),
     };
 
     await updateDoc(docRef, updates);
 
-    return Promise.resolve({
+    return {
       status: true,
       message: "Successfully added the item!",
-    });
+    };
   } catch (error) {
-    return Promise.resolve({
+    return {
       status: false,
       message: error.message,
-    });
+    };
   }
 }
