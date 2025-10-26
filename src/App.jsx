@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/router/ProtectedRoute";
 import Header from "./layouts/Header";
 import Logout from "./pages/Logout";
-import History from "./pages/History";
+import History from "./pages/manage/History";
 import NotFound from "./pages/NotFound";
 import CreateUser from "./pages/manage/CreateUser";
 import CreateItem from "./pages/manage/CreateItem";

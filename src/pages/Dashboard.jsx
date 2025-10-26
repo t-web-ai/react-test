@@ -1,66 +1,27 @@
-import { Link } from "react-router";
+import ItemBox from "../components/dashboard/ItemBox";
+
 function Dashboard() {
   return (
     <>
-      <h1 className="m-2">Dashboard</h1>
+      <h1 className="mx-2 mt-3">Dashboard</h1>
       <div className="container">
-        <div className="row p-2 align-items-stretch">
-          <div className="col-6 p-2">
-            <Link
-              to="/dashboard/users/create"
-              className="d-block btn btn-primary h-100 d-flex justify-content-center align-items-center"
-            >
-              <div
-                className="d-flex align-items-center gap-3"
-                style={{ fontSize: "1.5rem" }}
-              >
-                <i className="bi bi-person-plus"></i>
-                <span className="d-none d-sm-block">Create User</span>
-              </div>
-            </Link>
-          </div>
-          <div className="col-6 p-2">
-            <Link
-              to="/dashboard/items/create"
-              className="d-block btn btn-primary h-100 d-flex justify-content-center align-items-center"
-            >
-              <div
-                className="d-flex align-items-center gap-3"
-                style={{ fontSize: "1.5rem" }}
-              >
-                <i className="bi bi-clipboard-plus"></i>
-                <span className="d-none d-sm-block">Add Item</span>
-              </div>
-            </Link>
-          </div>
-          <div className="col-6 p-2">
-            <Link
-              to="/dashboard/items/history"
-              className="d-block btn btn-primary h-100 d-flex justify-content-center align-items-center"
-            >
-              <div
-                className="d-flex align-items-center gap-3"
-                style={{ fontSize: "1.5rem" }}
-              >
-                <i className="bi bi-clock-history"></i>
-                <span className="d-none d-sm-block">Histroy</span>
-              </div>
-            </Link>
-          </div>
-          <div className="col-6 p-2">
-            <Link
-              to="/dashboard/items/search"
-              className="d-block btn btn-primary h-100 d-flex justify-content-center align-items-center"
-            >
-              <div
-                className="d-flex align-items-center gap-3"
-                style={{ fontSize: "1.5rem" }}
-              >
-                <i className="bi bi-search"></i>
-                <span className="d-none d-sm-block">Search</span>
-              </div>
-            </Link>
-          </div>
+        <div className="row p-1 align-items-stretch">
+          <ItemBox
+            to="/dashboard/users/create"
+            icon="bi bi-person-plus"
+            label="New User"
+          />
+          <ItemBox
+            to="/dashboard/items/create"
+            icon="bi bi-clipboard-plus"
+            label="New Item"
+          />
+          <ItemBox
+            to="/dashboard/history"
+            icon="bi bi-clock-history"
+            label="History"
+          />
+          <ItemBox to="/dashboard/search" icon="bi bi-search" label="Search" />
         </div>
       </div>
     </>
