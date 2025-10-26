@@ -13,7 +13,15 @@ function ProtectedRoute() {
       </div>
     );
   if (!user)
-    return <Navigate to="/" state={{ from: location }} replace={true} />;
+    return (
+      <Navigate
+        to="/"
+        state={{
+          from: location.pathname == "/dashboard/logout" ? null : location,
+        }}
+        replace={true}
+      />
+    );
   return <Outlet />;
 }
 
