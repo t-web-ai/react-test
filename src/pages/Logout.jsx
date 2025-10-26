@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { logout } from "../service/auth";
 
-async function Logout() {
+function Logout() {
   useEffect(() => {
     logout();
   });

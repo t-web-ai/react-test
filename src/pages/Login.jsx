@@ -4,10 +4,11 @@ import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { loginSchema } from "../schema/loginSchema";
 import { login } from "../service/auth";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     register,
     handleSubmit,
@@ -18,8 +19,9 @@ function Login() {
 
   const submit = async ({ email, password }) => {
     const response = await login(email, password);
+    const previous = location.state?.from ?? { pathname: "/dashboard" };
     if (response) {
-      navigate("/dashboard", { replace: true });
+      navigate(previous, { replace: true });
     }
   };
 

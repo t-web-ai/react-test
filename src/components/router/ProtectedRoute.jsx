@@ -1,9 +1,9 @@
-import { Outlet, replace, useNavigate } from "react-router";
+import { Outlet, Navigate, useLocation } from "react-router";
 import { useAuth } from "../context/UserContext";
 
 function ProtectedRoute() {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const location = useLocation();
   if (loading)
     return (
       <div className="vh-100 vw-100 d-flex justify-content-center align-items-center">
@@ -12,7 +12,8 @@ function ProtectedRoute() {
         </div>
       </div>
     );
-  if (!user) return navigate("/", { replace: true });
+  if (!user)
+    return <Navigate to="/" state={{ from: location }} replace={true} />;
   return <Outlet />;
 }
 
