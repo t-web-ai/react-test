@@ -19,7 +19,7 @@ function CreateItem() {
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: joiResolver(createItemSchema),
@@ -62,12 +62,9 @@ function CreateItem() {
     const { username: id, type, quantity, price } = data;
     const { message, status } = await add_item({ id, type, quantity, price });
     if (status) {
-      reset({
-        username: data.username,
-        type: null,
-        quantity: null,
-        price: null,
-      });
+      setValue("type", null);
+      setValue("quantity", null);
+      setValue("price", null);
       return success(message, "add-item");
     }
     return failed(message, "add-item");
