@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import TomSelect from "tom-select";
-import { get_users_list } from "../../service/userService";
+import { add_item, get_users_list } from "../../service/userService";
 import "./CreateItem.css";
 import InputBox from "../../components/form/InputBox";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { createItemSchema } from "../../schema/createItemSchema";
+import { success, failed } from "../../components/toast";
 
 function CreateItem() {
   const selectRef = useRef(null);
@@ -58,8 +59,18 @@ function CreateItem() {
   }, [users]);
 
   const createItem = async (data) => {
-    console.log(data);
-    reset({ username: data.username, type: null, quantity: null, price: null });
+    const { username: id, type, quantity, price } = data;
+    const { message, status } = await add_item({ id, type, quantity, price });
+    if (status) {
+      reset({
+        username: data.username,
+        type: null,
+        quantity: null,
+        price: null,
+      });
+      return success(message, "add-item");
+    }
+    return failed(message, "add-item");
   };
 
   if (!loading && !users.length)
