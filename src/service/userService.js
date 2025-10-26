@@ -11,6 +11,12 @@ import {
   setDoc,
   serverTimestamp,
   getDocFromServer,
+  orderBy,
+  limit,
+  getCountFromServer,
+  endBefore,
+  startAfter,
+  limitToLast,
 } from "firebase/firestore";
 import { firestore as db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -132,4 +138,68 @@ export async function add_item({ id, type, quantity, price }) {
       message: error.message,
     };
   }
+}
+
+export async function history({ year, month, day, filter, action, cursorRef }) {
+  const userRef = collection(db, collection_name);
+
+  const page_limit = import.meta.env.VITE_USER_PER_PAGE ?? 10;
+  let field = "";
+  let date = "";
+  switch (filter) {
+    case "daily":
+      field = `dailyQuantityTotals.${day}`;
+      date = day;
+      break;
+    case "monthly":
+      field = `monthlyQuantityTotals.${month}`;
+      date = month;
+      break;
+    case "yearly":
+      field = `yearlyQuantityTotals.${year}`;
+      date = year;
+      break;
+    default:
+      return;
+  }
+
+  let paginate;
+  switch (action) {
+    case "next":
+      paginate = query(
+        userRef,
+        orderBy(field, "desc"),
+        startAfter(cursorRef.last),
+        limit(page_limit)
+      );
+      break;
+    case "previous":
+      paginate = query(
+        userRef,
+        orderBy(field, "desc"),
+        endBefore(cursorRef.first),
+        limitToLast(page_limit)
+      );
+      break;
+    default:
+      paginate = query(userRef, orderBy(field, "desc"), limit(page_limit));
+      break;
+  }
+  const paginateCount = query(userRef, orderBy(field, "desc"));
+  const [userSnap, countSnap] = await Promise.all([
+    getDocs(paginate),
+    getCountFromServer(paginateCount),
+  ]);
+  return {
+    users: userSnap.docs.map((user) => ({
+      id: user.id,
+      ...user.data(),
+    })),
+    cursor: {
+      first: userSnap.docs[0],
+      last: userSnap.docs[userSnap.docs.length - 1],
+    },
+    date,
+    count: countSnap.data().count,
+  };
 }
