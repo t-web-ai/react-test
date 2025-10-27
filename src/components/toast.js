@@ -12,3 +12,7 @@ export function success(message, id) {
 export function failed(message, id) {
   toast.error(message, { id, ...option });
 }
+
+export function processing(message, id) {
+  toast.loading(message, { id, ...option });
+}

@@ -21,7 +21,7 @@ import {
 import { firestore as db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
 
-const { VITE_COLLECTION: collection_name } = import.meta.env;
+export const { VITE_COLLECTION: collection_name } = import.meta.env;
 
 export async function create_user(name, address) {
   const usersRef = collection(db, collection_name);

@@ -1,9 +1,15 @@
+import { useContext, useState } from "react";
 import CardHeader from "./CardBox/CardHeader";
 import CardItem from "./CardBox/CardItem";
 import DailyCardBox from "./DailyCardBox";
 import DailyItem from "./DailyCardBox/DailyItem";
+import { HistoryContext } from "../context/HistoryContext";
 
-function CardBox({ user, filter, selector }) {
+function CardBox({ user: data, filter, selector }) {
+  // history context
+  const [user, setUser] = useState(data || {});
+  const { onShow } = useContext(HistoryContext);
+
   // Format date nicely
   const options = { year: "numeric" };
   if (selector.split("-").length >= 2) options.month = "long";
@@ -15,8 +21,10 @@ function CardBox({ user, filter, selector }) {
   const dailyStatus = user?.dailyStatus?.[selector] || {};
 
   const onDelete = async (id) => {
-    alert(id);
+    onShow({ show: true, id, user, setUser, selector });
   };
+
+  if (!user) return null;
 
   return (
     <div className="card border-0 shadow-lg my-3 rounded-3 overflow-hidden">
