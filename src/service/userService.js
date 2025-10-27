@@ -142,63 +142,52 @@ export async function add_item({ id, type, quantity, price }) {
 
 export async function history({ year, month, day, filter, action, cursorRef }) {
   const userRef = collection(db, collection_name);
+  const pageLimit = Number(import.meta.env.VITE_USER_PER_PAGE ?? 10);
 
-  const page_limit = import.meta.env.VITE_USER_PER_PAGE ?? 10;
-  let field = "";
-  let date = "";
-  switch (filter) {
-    case "daily":
-      field = `dailyQuantityTotals.${day}`;
-      date = day;
-      break;
-    case "monthly":
-      field = `monthlyQuantityTotals.${month}`;
-      date = month;
-      break;
-    case "yearly":
-      field = `yearlyQuantityTotals.${year}`;
-      date = year;
-      break;
-    default:
-      return;
-  }
+  // Determine field & date based on filter
+  const fieldMap = {
+    daily: `dailyQuantityTotals.${day}`,
+    monthly: `monthlyQuantityTotals.${month}`,
+    yearly: `yearlyQuantityTotals.${year}`,
+  };
 
-  let paginate;
-  switch (action) {
-    case "next":
-      paginate = query(
-        userRef,
-        orderBy(field, "desc"),
-        startAfter(cursorRef.last),
-        limit(page_limit)
-      );
-      break;
-    case "previous":
-      paginate = query(
-        userRef,
-        orderBy(field, "desc"),
-        endBefore(cursorRef.first),
-        limitToLast(page_limit)
-      );
-      break;
-    default:
-      paginate = query(userRef, orderBy(field, "desc"), limit(page_limit));
-      break;
-  }
-  const paginateCount = query(userRef, orderBy(field, "desc"));
+  const field = fieldMap[filter];
+  const date = { daily: day, monthly: month, yearly: year }[filter];
+
+  if (!field) return;
+
+  // Pagination query builder
+  const baseQuery = [userRef, orderBy(field, "desc")];
+
+  const paginate =
+    action === "next"
+      ? query(...baseQuery, startAfter(cursorRef?.last), limit(pageLimit))
+      : action === "previous"
+      ? query(...baseQuery, endBefore(cursorRef?.first), limitToLast(pageLimit))
+      : query(...baseQuery, limit(pageLimit));
+
+  //  Count query (optional but separate)
+  const countQuery = query(userRef, orderBy(field, "desc"));
+
+  //  Execute both in parallel
   const [userSnap, countSnap] = await Promise.all([
     getDocs(paginate),
-    getCountFromServer(paginateCount),
+    getCountFromServer(countQuery),
   ]);
+
+  //  Map user data
+  const users = userSnap.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  // Cursor references
+  const first = userSnap.docs[0];
+  const last = userSnap.docs[userSnap.docs.length - 1];
+
   return {
-    users: userSnap.docs.map((user) => ({
-      id: user.id,
-      ...user.data(),
-    })),
-    cursor: {
-      first: userSnap.docs[0],
-      last: userSnap.docs[userSnap.docs.length - 1],
-    },
+    users,
+    cursor: { first, last },
     date,
     count: countSnap.data().count,
   };

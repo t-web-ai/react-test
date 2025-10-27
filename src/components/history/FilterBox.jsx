@@ -1,6 +1,6 @@
 function FilterBox({ setFilter, defaultPage }) {
   return (
-    <div className="my-2">
+    <div className="w-50">
       <select
         defaultValue="daily"
         className="form-select fs-5"

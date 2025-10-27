@@ -1,0 +1,9 @@
+@media screen and (max-width: 350px) {
+  .sm-column {
+    flex-direction: column;
+    column-gap: 0;
+  }
+  .sm-column > div {
+    width: 100% !important;
+  }
+}

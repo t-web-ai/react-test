@@ -1,7 +1,7 @@
 import Button from "./Button";
 
 function Paginator({ total, next, prev, page }) {
-  const limit = import.meta.env.VITE_USER_PER_PAGE;
+  const limit = import.meta.env.VITE_USER_PER_PAGE ?? 10;
   const totalPages = Math.ceil(total / limit);
   return (
     <div className="my-3">
