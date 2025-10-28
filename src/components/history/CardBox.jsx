@@ -36,13 +36,13 @@ function CardBox({ user: data, filter, selector }) {
         <div className="row text-center g-3">
           <CardItem
             icon="bi bi-box-seam text-warning"
-            value={totalItems}
+            value={totalItems.toLocaleString("en-US")}
             label="Total Items"
             labelStyle="text-body"
           />
           <CardItem
             icon="bi bi-cash-coin text-success"
-            value={totalPrice}
+            value={totalPrice.toLocaleString("en-US")}
             labelStyle="text-body"
             label="Total Price (MMK)"
           />
