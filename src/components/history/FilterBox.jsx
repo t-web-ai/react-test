@@ -3,7 +3,7 @@ function FilterBox({ setFilter, defaultPage }) {
     <div className="w-50">
       <select
         defaultValue="daily"
-        className="form-select fs-5"
+        className="form-select fs-5 h-100"
         onChange={(e) => {
           setFilter(e.target.value);
           defaultPage();

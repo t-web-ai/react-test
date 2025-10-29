@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { createItemSchema } from "../../schema/createItemSchema";
 import { success, failed } from "../../components/toast";
+import LazyLoader from "../../components/context/LazyLoader";
 
 function CreateItem() {
   const selectRef = useRef(null);
@@ -90,6 +91,11 @@ function CreateItem() {
 
   return (
     <div className="container">
+      {!tomReady && (
+        <div className="mt-5">
+          <LazyLoader />
+        </div>
+      )}
       <div
         className="bg-secondary-subtle p-3 rounded my-5"
         style={{ visibility: tomReady ? "visible" : "hidden" }}
