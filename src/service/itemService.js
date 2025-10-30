@@ -30,9 +30,14 @@ export const DeleteFromServer = async ({ id, selector, user }) => {
 
     const { quantity, total } = userDoc.dailyStatus?.[selector]?.[id];
 
+    // client time
     const now = selector.split("-");
     const month = now.slice(0, 2).join("-");
     const year = now.slice(0, 1).join("-");
+
+    // server time
+    const current = new Date().toLocaleDateString().split("/");
+    const today = `${current[2]}-${current[0]}-${current[1]}`;
 
     const daily = {
       total: (userDoc.dailyTotals[selector] || 0) - total,
@@ -49,7 +54,7 @@ export const DeleteFromServer = async ({ id, selector, user }) => {
       quantity: (userDoc.yearlyQuantityTotals[year] || 0) - quantity,
     };
 
-    const updateConfig = {
+    let updateConfig = {
       [`dailyStatus.${selector}.${id}`]: deleteField(),
 
       [`dailyQuantityTotals.${selector}`]:
@@ -66,6 +71,9 @@ export const DeleteFromServer = async ({ id, selector, user }) => {
       [`yearlyQuantityTotals.${year}`]:
         yearly.quantity > 0 ? yearly.quantity : deleteField(),
     };
+    if (daily.quantity <= 0 && today == now.join("-")) {
+      updateConfig = { ...updateConfig, ...{ createdAt: deleteField() } };
+    }
     await updateDoc(userRef, updateConfig);
     return { status: true, message: "Deleted the item successfully!" };
   } catch ({ message }) {

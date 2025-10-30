@@ -144,9 +144,16 @@ export async function history({ year, month, day, filter, action, cursorRef }) {
   const userRef = collection(db, collection_name);
   const pageLimit = Number(import.meta.env.VITE_USER_PER_PAGE ?? 10);
 
+  const now = new Date().toLocaleDateString().split("/");
+  const today = `${now[2]}-${now[0]}-${now[1]}`;
+
+  function get_daily_action() {
+    if (today == day) return "createdAt";
+    return `dailyQuantityTotals.${day}`;
+  }
   // Determine field & date based on filter
   const fieldMap = {
-    daily: `dailyQuantityTotals.${day}`,
+    daily: get_daily_action(),
     monthly: `monthlyQuantityTotals.${month}`,
     yearly: `yearlyQuantityTotals.${year}`,
   };
