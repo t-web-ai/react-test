@@ -115,7 +115,7 @@ function CreateItem() {
             >
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
-                  {user.data.name} ({user.data.address})
+                  {user.name} ({user.address})
                 </option>
               ))}
             </select>

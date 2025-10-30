@@ -8,6 +8,7 @@ import History from "./pages/manage/History";
 import NotFound from "./pages/NotFound";
 import CreateUser from "./pages/manage/CreateUser";
 import CreateItem from "./pages/manage/CreateItem";
+import Search from "./pages/manage/Search";
 function App() {
   return (
     <Routes>
@@ -21,6 +22,8 @@ function App() {
 
             <Route path="users/create" element={<CreateUser />} />
             <Route path="items/create" element={<CreateItem />} />
+
+            <Route path="search" element={<Search />} />
           </Route>
         </Route>
       </Route>

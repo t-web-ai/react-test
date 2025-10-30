@@ -17,20 +17,24 @@ import {
   endBefore,
   startAfter,
   limitToLast,
+  arrayUnion,
 } from "firebase/firestore";
 import { firestore as db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
 
-export const { VITE_COLLECTION: collection_name } = import.meta.env;
+export const {
+  VITE_COLLECTION: collection_name,
+  VITE_DOCUMENT: document_name,
+} = import.meta.env;
 
-export async function create_user(name, address) {
+export async function create_user(name, address, user_id) {
   const usersRef = collection(db, collection_name);
   try {
     // query
     const q = query(
       usersRef,
-      where("name", "==", name),
-      where("address", "==", address)
+      where("name_lowercase", "==", String(name).trim().toLowerCase()),
+      where("address_lowercase", "==", String(address).trim().toLowerCase())
     );
 
     // get document
@@ -43,12 +47,53 @@ export async function create_user(name, address) {
         message: "This user is already registered.",
       });
 
+    if (user_id) {
+      await updateDoc(doc(db, collection_name, user_id), {
+        name: String(name).trim(),
+        address: String(address).trim(),
+        name_lowercase: String(name).toLowerCase().trim(),
+        address_lowercase: String(address).toLowerCase().trim(),
+      });
+
+      const userDocRef = doc(db, collection_name, document_name);
+
+      const userSnap = await getDoc(userDocRef);
+      if (!userSnap.exists()) {
+        return Promise.resolve({
+          status: false,
+          message: "User is not found",
+        });
+      }
+      const updatedUserList = userSnap
+        .data()
+        .user_array.filter((user) => user.id != user_id);
+      await updateDoc(userDocRef, {
+        user_array: [...updatedUserList, ...[{ id: user_id, name, address }]],
+      });
+      return Promise.resolve({
+        status: true,
+        message: "Updated user successfully!",
+      });
+    }
+
     // unless
     const docRef = await addDoc(usersRef, {
-      name,
-      address,
-      createdAt: new Date(),
+      name: String(name).trim(),
+      address: String(address).trim(),
+      name_lowercase: String(name).trim().toLowerCase(),
+      address_lowercase: String(address).trim().toLowerCase(),
     });
+    await setDoc(
+      doc(db, collection_name, document_name),
+      {
+        user_array: arrayUnion({
+          id: (await getDoc(docRef)).id, // use the new doc ID
+          name: String(name).trim(),
+          address: String(address).trim(),
+        }),
+      },
+      { merge: true }
+    );
     return Promise.resolve({
       status: true,
       message: "New user created successfully!",
@@ -61,13 +106,27 @@ export async function create_user(name, address) {
   }
 }
 
-export async function get_users_list() {
+export async function get_users_list(search) {
   const userRef = collection(db, collection_name);
 
   try {
-    const documents = await getDocs(userRef);
-
-    const users = documents.docs.map((user) => {
+    if (!search) {
+      const userListRef = doc(db, collection_name, document_name);
+      const documents = await getDoc(userListRef);
+      const users = documents.data().user_array;
+      return Promise.resolve(users);
+    }
+    const usersQuery = query(
+      userRef,
+      where("name_lowercase", ">=", String(search).trim().toLowerCase()),
+      where(
+        "name_lowercase",
+        "<=",
+        String(search).trim().toLowerCase() + "\uf8ff"
+      )
+    );
+    const usersDocuemnt = await getDocs(usersQuery);
+    const users = usersDocuemnt.docs.map((user) => {
       return {
         id: user.id,
         data: user.data(),
