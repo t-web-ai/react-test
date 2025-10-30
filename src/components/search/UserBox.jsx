@@ -4,19 +4,17 @@ import { create_user } from "../../service/userService";
 import { failed, processing, success } from "../toast";
 import { useState } from "react";
 
-function UserBox({ user }) {
-  const [info, setInfo] = useState({
-    name: user.data.name,
-    address: user.data.address,
-  });
+function UserBox({ user: data, onShow }) {
+  const [user, setUser] = useState(data || {});
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      name: user.data.name,
-      address: user.data.address,
+      name: user?.data?.name,
+      address: user?.data?.address,
     },
   });
   const editUser = async ({ name, address }) => {
@@ -25,15 +23,17 @@ function UserBox({ user }) {
 
     if (!status) return failed("Failed to update!", "update-user");
 
-    setInfo({ name, address });
+    setUser({ ...user, ...{ data: { ...user.data, ...{ name, address } } } });
     return success(message, "update-user");
   };
+
+  if (!user) return null;
 
   return (
     <div className="mt-3 bg-secondary-subtle rounded container py-4 px-3">
       <div className="d-flex justify-content-between fs-5  align-items-center">
         <div>
-          {info?.name} ({info?.address})
+          {user?.data?.name} ({user?.data?.address})
         </div>
         <div className="d-flex gap-3 mx-2">
           <i
@@ -42,7 +42,10 @@ function UserBox({ user }) {
             data-bs-target={`#${user.id}`}
           ></i>
 
-          <i className="bi bi-trash fs-3 text-danger"></i>
+          <i
+            className="bi bi-trash fs-3 text-danger"
+            onClick={() => onShow({ id: user.id, user, setUser })}
+          ></i>
         </div>
       </div>
 

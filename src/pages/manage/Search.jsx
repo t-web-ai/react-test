@@ -5,8 +5,13 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import { searchSchema } from "../../schema/searchSchema";
 import { useState } from "react";
 import LazyLoader from "../../components/context/LazyLoader";
-import { get_users_list } from "../../service/userService";
+import {
+  deleteUserFromServer,
+  get_users_list,
+} from "../../service/userService";
 import UserBox from "../../components/search/UserBox";
+import ConfirmModal from "../../components/modal/ConfirmModal";
+import { failed, processing, success } from "../../components/toast";
 
 function Search() {
   const [users, setUsers] = useState([]);
@@ -14,6 +19,7 @@ function Search() {
   const { register, handleSubmit } = useForm({
     resolver: joiResolver(searchSchema),
   });
+  const [show, setShow] = useState({ show: false });
 
   const search = async ({ search }) => {
     setLoading(true);
@@ -28,8 +34,33 @@ function Search() {
       setLoading(false);
     }
   };
+
+  const onShow = ({ id, user, setUser }) => {
+    setShow({ show: true, id, user, setUser });
+  };
+  const onClose = () => {
+    setShow({ show: false });
+  };
+  const onConfirm = async ({ id, user, setUser }) => {
+    setShow({ show: false });
+
+    try {
+      processing("Deleting", "delete-user");
+      const { status, message } = await deleteUserFromServer({
+        id,
+        user: user.data,
+      });
+      if (!status) throw new Error(message);
+      success(message, "delete-user");
+      setUser(null);
+    } catch ({ message }) {
+      failed(message, "delete-user");
+    }
+  };
+
   return (
     <div className="container">
+      <ConfirmModal show={show} onClose={onClose} onConfirm={onConfirm} />
       <form className="mt-4" onSubmit={handleSubmit(search)}>
         <SearchBox
           register={register}
@@ -44,7 +75,7 @@ function Search() {
       ) : users.length > 0 ? (
         <div id="accordion" className="mb-4">
           {users.map((user) => (
-            <UserBox key={user.id} user={user} />
+            <UserBox key={user.id} user={user} onShow={onShow} />
           ))}
         </div>
       ) : (

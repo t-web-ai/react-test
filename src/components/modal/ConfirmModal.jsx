@@ -37,7 +37,7 @@ function ConfirmModal({
             </div>
 
             <div className="modal-body fs-5">
-              Are you sure you want to delete this item? This action cannot be
+              Are you sure you want to delete this one? This action cannot be
               undone.
             </div>
 

@@ -18,6 +18,8 @@ import {
   startAfter,
   limitToLast,
   arrayUnion,
+  deleteDoc,
+  arrayRemove,
 } from "firebase/firestore";
 import { firestore as db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -257,4 +259,20 @@ export async function history({ year, month, day, filter, action, cursorRef }) {
     date,
     count: countSnap.data().count,
   };
+}
+
+export async function deleteUserFromServer({ id, user: { name, address } }) {
+  const userDocRef = doc(db, collection_name, id);
+  try {
+    await deleteDoc(userDocRef);
+    const userListDocRef = doc(db, collection_name, document_name);
+    const userListSnap = await getDoc(userListDocRef);
+    await updateDoc(userListDocRef, {
+      user_array: arrayRemove({ id, name, address }),
+    });
+
+    return { status: true, message: "Deleted the user successfully!" };
+  } catch ({ message }) {
+    return { status: false, message };
+  }
 }
