@@ -6,7 +6,10 @@ import Paginator from "../../components/paginator/Paginator";
 import CardBox from "../../components/history/CardBox";
 import ConfirmModal from "../../components/modal/ConfirmModal";
 import { HistoryContextProvider } from "../../components/context/HistoryContext";
-import { DeleteFromServer, DeleteItemFromUI } from "../../service/itemService";
+import {
+  DeleteItemFromServer,
+  DeleteItemFromUI,
+} from "../../service/itemService";
 import { processing, failed, success } from "../../components/toast";
 
 function History() {
@@ -69,7 +72,7 @@ function History() {
     setShow({ show: false });
     processing("Deleting the item", "delete-item");
     try {
-      const { status, message } = await DeleteFromServer({
+      const { status, message } = await DeleteItemFromServer({
         id,
         selector,
         user,

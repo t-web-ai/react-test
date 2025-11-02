@@ -19,7 +19,7 @@ export const DeleteItemFromUI = ({ id, selector, user, setUser }) => {
   setUser(clone);
 };
 
-export const DeleteFromServer = async ({ id, selector, user }) => {
+export const DeleteItemFromServer = async ({ id, selector, user }) => {
   try {
     const userRef = doc(db, collection_name, user.id);
 

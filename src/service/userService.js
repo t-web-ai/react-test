@@ -20,6 +20,7 @@ import {
   arrayUnion,
   deleteDoc,
   arrayRemove,
+  writeBatch,
 } from "firebase/firestore";
 import { firestore as db } from "./firebase";
 import { v4 as uuidv4 } from "uuid";
@@ -50,15 +51,17 @@ export async function create_user(name, address, user_id) {
       });
 
     if (user_id) {
-      await updateDoc(doc(db, collection_name, user_id), {
+      const batch = writeBatch(db);
+      // update user with id ( batch one )
+      batch.update(doc(db, collection_name, user_id), {
         name: String(name).trim(),
         address: String(address).trim(),
         name_lowercase: String(name).toLowerCase().trim(),
         address_lowercase: String(address).toLowerCase().trim(),
       });
 
+      // find user array document
       const userDocRef = doc(db, collection_name, document_name);
-
       const userSnap = await getDoc(userDocRef);
       if (!userSnap.exists()) {
         return Promise.resolve({
@@ -66,12 +69,19 @@ export async function create_user(name, address, user_id) {
           message: "User is not found",
         });
       }
+
+      // filter user
       const updatedUserList = userSnap
         .data()
         .user_array.filter((user) => user.id != user_id);
-      await updateDoc(userDocRef, {
+
+      // update user array document with filter array ( batch two )
+      batch.update(userDocRef, {
         user_array: [...updatedUserList, ...[{ id: user_id, name, address }]],
       });
+
+      // commit batch
+      await batch.commit();
       return Promise.resolve({
         status: true,
         message: "Updated user successfully!",
@@ -79,23 +89,30 @@ export async function create_user(name, address, user_id) {
     }
 
     // unless
-    const docRef = await addDoc(usersRef, {
+    const batch = writeBatch(db);
+    const userDocRef = doc(usersRef);
+
+    // create new user ( batch one )
+    batch.set(userDocRef, {
       name: String(name).trim(),
       address: String(address).trim(),
       name_lowercase: String(name).trim().toLowerCase(),
       address_lowercase: String(address).trim().toLowerCase(),
     });
-    await setDoc(
+    // add user information to user array document
+    batch.set(
       doc(db, collection_name, document_name),
       {
         user_array: arrayUnion({
-          id: (await getDoc(docRef)).id, // use the new doc ID
+          id: userDocRef.id, // use the new doc ID
           name: String(name).trim(),
           address: String(address).trim(),
         }),
       },
       { merge: true }
     );
+    // commit batch
+    await batch.commit();
     return Promise.resolve({
       status: true,
       message: "New user created successfully!",
@@ -264,13 +281,17 @@ export async function history({ year, month, day, filter, action, cursorRef }) {
 export async function deleteUserFromServer({ id, user: { name, address } }) {
   const userDocRef = doc(db, collection_name, id);
   try {
-    await deleteDoc(userDocRef);
+    const batch = writeBatch(db);
+    // delete user from user collection ( batch one )
+    batch.delete(userDocRef);
     const userListDocRef = doc(db, collection_name, document_name);
     const userListSnap = await getDoc(userListDocRef);
-    await updateDoc(userListDocRef, {
+    // delete user information from user array document ( batch two )
+    batch.update(userListDocRef, {
       user_array: arrayRemove({ id, name, address }),
     });
-
+    // commit batch
+    await batch.commit();
     return { status: true, message: "Deleted the user successfully!" };
   } catch ({ message }) {
     return { status: false, message };
