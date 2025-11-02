@@ -70,14 +70,14 @@ function CreateItem() {
 
   if (!loading && !users.length)
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="text-center">
-          <h4 className="fw-semibold text-danger mb-3">
-            ⚠️ You must create users before continuing.
-          </h4>
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="my-5 px-4">
+          <div className="text-body mb-3 fs-5">
+            You must create users before continuing.
+          </div>
           <Link
             to="/dashboard"
-            className="btn btn-success px-4 py-2 fs-5 rounded-pill shadow-sm"
+            className="btn btn-success my-2 px-3 py-1 fs-5 rounded-pill shadow-sm"
             replace
           >
             Go Back

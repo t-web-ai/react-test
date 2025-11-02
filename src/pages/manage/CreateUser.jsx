@@ -23,7 +23,7 @@ function CreateUser() {
   };
 
   return (
-    <div className="container d-flex justify-content-center my-4">
+    <div className="container d-flex justify-content-center my-3">
       <div
         className="card shadow-sm border-0 rounded-3  bg-secondary-subtle"
         style={{ maxWidth: "480px", width: "100%" }}

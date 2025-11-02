@@ -102,7 +102,7 @@ function History() {
         {/* show history data  */}
         {loading ? (
           // if loading
-          <div className="my-4">
+          <div className="my-3">
             <LazyLoader />
           </div>
         ) : users.length > 0 ? (
