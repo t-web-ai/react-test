@@ -1,5 +1,5 @@
 import InputBox from "../components/form/InputBox";
-import "../css/Login.css";
+import "./Login.css";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { loginSchema } from "../schema/loginSchema";

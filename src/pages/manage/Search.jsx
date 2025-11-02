@@ -69,7 +69,7 @@ function Search() {
         />
       </form>
       {loading ? (
-        <div className="mt-4">
+        <div className="mt-3">
           <LazyLoader />
         </div>
       ) : users.length > 0 ? (

@@ -29,7 +29,7 @@ function CreateItem() {
   useEffect(() => {
     const fetchUsers = async () => {
       const data = await get_users_list();
-      setUsers(data);
+      setUsers(data || []);
       setLoading(false);
     };
     fetchUsers();
@@ -42,10 +42,7 @@ function CreateItem() {
       }
       tomSelectRef.current = new TomSelect(selectRef.current, {
         allowEmptyOption: false,
-        sortField: {
-          field: "text",
-          direction: "asc",
-        },
+        sortField: { field: "text", direction: "asc" },
         onInitialize: () => {
           setTomReady(true);
           register("username").ref(selectRef.current);
@@ -63,9 +60,9 @@ function CreateItem() {
     const { username: id, type, quantity, price } = data;
     const { message, status } = await add_item({ id, type, quantity, price });
     if (status) {
-      setValue("type", null);
-      setValue("quantity", null);
-      setValue("price", null);
+      setValue("type", "");
+      setValue("quantity", "");
+      setValue("price", "");
       return success(message, "add-item");
     }
     return failed(message, "add-item");
@@ -73,18 +70,18 @@ function CreateItem() {
 
   if (!loading && !users.length)
     return (
-      <div className="d-flex justify-content-center my-5">
-        <div className="container">
-          <div className="fs-4">You must create users before continuing.</div>
-          <div className="rounded my-4">
-            <Link
-              to="/dashboard"
-              className="small text-decoration-none btn btn-primary fs-5"
-              replace={true}
-            >
-              Go Back
-            </Link>
-          </div>
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="text-center">
+          <h4 className="fw-semibold text-danger mb-3">
+            ⚠️ You must create users before continuing.
+          </h4>
+          <Link
+            to="/dashboard"
+            className="btn btn-success px-4 py-2 fs-5 rounded-pill shadow-sm"
+            replace
+          >
+            Go Back
+          </Link>
         </div>
       </div>
     );
@@ -92,24 +89,33 @@ function CreateItem() {
   return (
     <div className="container">
       {!tomReady && (
-        <div className="mt-5">
+        <div
+          className="my-3"
+          style={{
+            maxWidth: "500px",
+            margin: "auto",
+          }}
+        >
           <LazyLoader />
         </div>
       )}
+
       <div
-        className="bg-secondary-subtle p-3 rounded my-5"
-        style={{ visibility: tomReady ? "visible" : "hidden" }}
+        className="mx-auto my-3 bg-secondary-subtle p-4 rounded-3 shadow-sm "
+        style={{
+          maxWidth: "500px",
+          visibility: tomReady ? "visible" : "hidden",
+        }}
       >
         <form onSubmit={handleSubmit(createItem)}>
           <div className="mb-3">
-            <label htmlFor="username" className="form-label fs-5 fw-bold">
+            <label htmlFor="username" className="form-label fs-5 fw-semibold">
               Username
             </label>
             <select
               {...register("username")}
               ref={selectRef}
               defaultValue=""
-              placeholder="Select a user..."
               name="username"
               id="username"
             >
@@ -120,20 +126,21 @@ function CreateItem() {
               ))}
             </select>
             {errors["username"] && (
-              <div className="text-danger fw-bold mt-1">
+              <div className="text-danger fw-semibold mt-1 small">
                 {errors["username"].message}
               </div>
             )}
           </div>
+
           <InputBox
-            label="Item type"
+            label="Item Type"
             type="text"
             name="type"
             error={errors["type"]}
             register={register}
           />
           <InputBox
-            label="Item quantity"
+            label="Quantity"
             type="number"
             name="quantity"
             error={errors["quantity"]}
@@ -146,8 +153,19 @@ function CreateItem() {
             error={errors["price"]}
             register={register}
           />
-          <button className="btn btn-success fs-5" disabled={isSubmitting}>
-            Add item
+
+          <button
+            className="btn btn-success fs-5 px-4 py-2 w-100 rounded-3 shadow-sm"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <span
+                className="spinner-border spinner-border-sm"
+                role="status"
+              ></span>
+            ) : (
+              "Add Item"
+            )}
           </button>
         </form>
       </div>

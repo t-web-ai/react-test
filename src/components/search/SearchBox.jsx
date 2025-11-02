@@ -2,29 +2,26 @@ function SearchBox({ register, name }) {
   return (
     <>
       <div
-        className="input-group"
+        className="input-group border"
         style={{
-          border: "1px solid #ccc",
           borderRadius: "6px",
           overflow: "hidden",
-          backgroundColor: "#fafafa",
         }}
       >
-        <span
+        <button
           className="input-group-text bg-light text-secondary fw-bold"
           style={{
             border: "none",
-            fontSize: "1.2rem",
+            fontSize: "1.5rem",
           }}
         >
           <i className="bi bi-search"></i>
-        </span>
+        </button>
         <input
           type="search"
-          className="form-control border-0 bg-transparent shadow-none "
+          className="form-control border-0 text-body shadow-none fs-5"
           placeholder="Type to search..."
           style={{
-            fontSize: "1.2rem",
             padding: "0.6rem 1rem",
             color: "#333",
           }}

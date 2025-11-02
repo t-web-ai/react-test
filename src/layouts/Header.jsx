@@ -1,24 +1,40 @@
 import { Outlet } from "react-router";
-import "../css/Header.css";
+import "./Header.css";
 import LinkItem from "../components/header/LinkItem";
 import { Link } from "react-router";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { theme } from "./Theme";
 
 function Header() {
+  const [icon, setIcon] = useState(theme.get_theme_icon());
   const toggle = useRef();
+  useEffect(() => {
+    setIcon(theme.get_theme_icon());
+  }, []);
+
   return (
     <>
       <nav className="navbar navbar-expand-lg sticky-top header">
         <div className="container-fluid">
-          <Link
-            className="navbar-brand fs-5 fw-bold text-primary"
-            to="/dashboard"
-          >
-            {import.meta.env.VITE_APP_NAME}
-          </Link>
+          <div>
+            <Link
+              className="navbar-brand fs-5 fw-bold text-success"
+              to="/dashboard"
+            >
+              {import.meta.env.VITE_APP_NAME}
+            </Link>
+            <span
+              onClick={() => {
+                setIcon(theme.change_theme(this));
+              }}
+              className="ms-2"
+            >
+              <i className={icon}></i>
+            </span>
+          </div>
           <button
             ref={toggle}
-            className="navbar-toggler"
+            className="navbar-toggler border-0 bg-transparent shadow-none"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#content"

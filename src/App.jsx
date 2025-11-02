@@ -9,7 +9,12 @@ import NotFound from "./pages/NotFound";
 import CreateUser from "./pages/manage/CreateUser";
 import CreateItem from "./pages/manage/CreateItem";
 import Search from "./pages/manage/Search";
+import { theme } from "./layouts/Theme";
+import { useEffect } from "react";
 function App() {
+  useEffect(() => {
+    theme.set_theme_state(theme.get_theme_state());
+  }, []);
   return (
     <Routes>
       <Route path="/" element={<Login />} />

@@ -1,6 +1,91 @@
+.item-box {
+  border-radius: 1rem;
+  padding: 2rem 1.2rem;
+  transition: all 0.25s ease;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color-translucent);
+  position: relative;
+  overflow: hidden;
+}
+@media screen and (max-width: 450px) {
+  .item-box {
+    padding: 1.4rem;
+  }
+}
+
 @media screen and (max-width: 300px) {
   .text-none {
     display: none;
-    background-color: green;
   }
+  .item-box {
+    padding: 1rem;
+  }
+}
+
+/* Container card */
+
+/* Light/Dark gradient overlay for clarity */
+.item-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--bs-success-rgb), 0.1),
+    rgba(var(--bs-body-color-rgb), 0.05)
+  );
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.item-box:hover::before {
+  opacity: 1;
+}
+
+/* Icon styling */
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-success-rgb), 0.2),
+    rgba(var(--bs-success-rgb), 0.05)
+  );
+  transition: all 0.3s ease;
+}
+
+.item-box-icon {
+  font-size: 2rem;
+  color: var(--bs-success);
+  transition: 0.2s;
+}
+
+.item-box:hover .item-box-icon {
+  transform: scale(1.2);
+}
+
+.item-box:hover .icon-wrapper {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bs-success-rgb), 0.35),
+    rgba(var(--bs-success-rgb), 0.15)
+  );
+}
+
+/* Label text */
+.item-box-label {
+  font-size: 1.05rem;
+  color: var(--bs-body-color);
+  z-index: 2;
+  position: relative;
+}
+
+/* Prevent background overlap readability issue */
+body {
+  background-color: var(--bs-body-bg);
+  background-attachment: fixed;
 }

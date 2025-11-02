@@ -1,7 +1,7 @@
 function Button({ label, action, condition }) {
   return (
     <button
-      className="btn btn-primary fs-5"
+      className="btn btn-success fs-5"
       onClick={action}
       disabled={condition}
     >

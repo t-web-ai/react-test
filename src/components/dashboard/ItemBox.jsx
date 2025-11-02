@@ -3,14 +3,13 @@ import "./ItemBox.css";
 
 function ItemBox({ to, icon, label }) {
   return (
-    <div className="col-6 p-2">
-      <Link
-        to={to}
-        className="d-block btn btn-primary h-100 d-flex justify-content-center align-items-center"
-      >
-        <div className="d-flex flex-column align-items-center gap-1 p-2">
-          <i className={icon} style={{ fontSize: "2.2rem" }}></i>
-          <span className="fs-5 text-none">{label}</span>
+    <div className="col-6 col-sm-6 col-md-4 col-lg-3 p-2 flex-grow-1">
+      <Link to={to} className="text-decoration-none">
+        <div className="item-box d-flex flex-column justify-content-center align-items-center text-center shadow-sm">
+          <div className="icon-wrapper mb-2">
+            <i className={`${icon} item-box-icon border-none text-body`}></i>
+          </div>
+          <span className="item-box-label fw-semibold text-none">{label}</span>
         </div>
       </Link>
     </div>
