@@ -1,5 +1,5 @@
 import { deleteField, doc, getDoc, updateDoc } from "firebase/firestore";
-import { collection_name } from "./userService";
+import { collection_name, PFormat } from "./userService";
 import { firestore as db } from "./firebase";
 
 export const DeleteItemFromUI = ({ id, selector, user, setUser }) => {
@@ -37,7 +37,7 @@ export const DeleteItemFromServer = async ({ id, selector, user }) => {
 
     // server time
     const current = new Date().toLocaleDateString().split("/");
-    const today = `${current[2]}-${current[0]}-${current[1]}`;
+    const today = `${current[2]}-${PFormat(current[0])}-${PFormat(current[1])}`;
 
     const daily = {
       total: (userDoc.dailyTotals[selector] || 0) - total,

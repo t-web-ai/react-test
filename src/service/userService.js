@@ -218,12 +218,16 @@ export async function add_item({ id, type, quantity, price }) {
   }
 }
 
+export function PFormat(value) {
+  return String(value).padStart(2, "0");
+}
+
 export async function history({ year, month, day, filter, action, cursorRef }) {
   const userRef = collection(db, collection_name);
   const pageLimit = Number(import.meta.env.VITE_USER_PER_PAGE ?? 10);
 
   const now = new Date().toLocaleDateString().split("/");
-  const today = `${now[2]}-${now[0]}-${now[1]}`;
+  const today = `${now[2]}-${PFormat(now[0])}-${PFormat(now[1])}`;
 
   function get_daily_action() {
     if (today == day) return "createdAt";
