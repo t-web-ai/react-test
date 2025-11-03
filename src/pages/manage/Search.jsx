@@ -3,7 +3,7 @@ import InputBox from "../../components/form/InputBox";
 import SearchBox from "../../components/search/SearchBox";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { searchSchema } from "../../schema/searchSchema";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LazyLoader from "../../components/context/LazyLoader";
 import {
   deleteUserFromServer,
@@ -16,47 +16,57 @@ import { failed, processing, success } from "../../components/toast";
 function Search() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { register, handleSubmit } = useForm({
-    resolver: joiResolver(searchSchema),
-  });
+  const [keyword, setKeyword] = useState("");
+  const { register, handleSubmit } = useForm();
   const [show, setShow] = useState({ show: false });
 
-  const search = async ({ search }) => {
+  useEffect(() => {
     setLoading(true);
-    try {
-      const response = await get_users_list(search);
+    get_users_list()
+      .then((response) => {
+        setUsers(response);
+      })
+      .catch(() => {
+        setUsers([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-      if (response.status == false) throw new Error("Failed");
-      setUsers(response);
-    } catch (error) {
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
+  const search = async ({ search }) => {
+    setKeyword(search);
   };
 
-  const onShow = ({ id, user, setUser }) => {
-    setShow({ show: true, id, user, setUser });
+  const onShow = ({ id, user }) => {
+    setShow({ show: true, id, user });
   };
   const onClose = () => {
     setShow({ show: false });
   };
-  const onConfirm = async ({ id, user, setUser }) => {
+  const onConfirm = async ({ id, user }) => {
     setShow({ show: false });
 
     try {
       processing("Deleting", "delete-user");
       const { status, message } = await deleteUserFromServer({
         id,
-        user: user.data,
+        user: user,
       });
       if (!status) throw new Error(message);
       success(message, "delete-user");
-      setUser(null);
+      const clone = [...users].filter((user) => user.id != id);
+      setUsers(clone);
     } catch ({ message }) {
       failed(message, "delete-user");
     }
   };
+  const filtered = users.filter((user) => {
+    const escape_keyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!escape_keyword) return user;
+    const rxp = new RegExp(escape_keyword ?? "", "i");
+    return rxp.test(user.name) || rxp.test(user.address);
+  });
 
   return (
     <div className="container">
@@ -72,10 +82,16 @@ function Search() {
         <div className="mt-3">
           <LazyLoader />
         </div>
-      ) : users.length > 0 ? (
+      ) : filtered.length > 0 ? (
         <div id="accordion" className="mb-4">
-          {users.map((user) => (
-            <UserBox key={user.id} user={user} onShow={onShow} />
+          {filtered.map((user) => (
+            <UserBox
+              key={user.id}
+              user={user}
+              onShow={onShow}
+              setUsers={setUsers}
+              users={users}
+            />
           ))}
         </div>
       ) : (

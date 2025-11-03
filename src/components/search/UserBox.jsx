@@ -6,17 +6,15 @@ import { useState } from "react";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { createUserSchema } from "../../schema/createUserSchema";
 
-function UserBox({ user: data, onShow }) {
-  const [user, setUser] = useState(data || {});
-
+function UserBox({ user, onShow, setUsers, users }) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      name: user?.data?.name,
-      address: user?.data?.address,
+      name: user?.name,
+      address: user?.address,
     },
     resolver: joiResolver(createUserSchema),
   });
@@ -26,7 +24,11 @@ function UserBox({ user: data, onShow }) {
 
     if (!status) return failed("Failed to update!", "update-user");
 
-    setUser({ ...user, ...{ data: { ...user.data, ...{ name, address } } } });
+    const index = [...users].findIndex(({ id }) => id == user.id);
+    const clone = [...users];
+    clone[index] = { ...user, ...{ name, address } };
+    setUsers(clone);
+
     return success(message, "update-user");
   };
 
@@ -38,8 +40,8 @@ function UserBox({ user: data, onShow }) {
       <div className="d-flex justify-content-between align-items-center p-3">
         {/* Name & Address vertically */}
         <div>
-          <div className="fs-5 fw-semibold text-body">{user?.data?.name}</div>
-          <div className="text-muted fs-6">{user?.data?.address}</div>
+          <div className="fs-5 fw-semibold text-body">{user?.name}</div>
+          <div className="text-muted fs-6">{user?.address}</div>
         </div>
 
         {/* Actions */}
@@ -60,7 +62,7 @@ function UserBox({ user: data, onShow }) {
           <button
             className="btn text-danger fs-5 btn-sm"
             type="button"
-            onClick={() => onShow({ id: user.id, user, setUser })}
+            onClick={() => onShow({ id: user.id, user })}
           >
             <i className="bi bi-trash"></i>
           </button>
